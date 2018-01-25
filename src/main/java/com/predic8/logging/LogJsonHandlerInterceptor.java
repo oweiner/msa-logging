@@ -26,6 +26,7 @@ public class LogJsonHandlerInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
+
 		Histogram.Timer timer = latency.startTimer();
 		request.setAttribute("timer", timer);
 
@@ -43,6 +44,8 @@ public class LogJsonHandlerInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object o, ModelAndView modelAndView) throws Exception {
 		Histogram.Timer timer = (Histogram.Timer) request.getAttribute("timer");
+
+		timer.observeDuration();
 
 		Map<String, Object> entries = new HashMap<>();
 		entries.put("status_code", response.getStatus());
